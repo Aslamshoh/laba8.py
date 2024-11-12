@@ -64,9 +64,24 @@ class StarApp:
 
         try:
             with open(file_path, 'r') as f:
+                self.stars.clear()  # Очистка списка перед загрузкой новых данных
                 for line in f:
-                    x, y, color, size = line.strip().split(',')
-                    self.stars.append(Star(int(x), int(y), color.strip(), int(size)))
+                    parts = line.strip().split(',')
+                    if len(parts) != 4:
+                        print(f"Invalid format in line: {line.strip()}")  # Отладочное сообщение
+                        messagebox.showerror("Error", f"Invalid format in line: {line.strip()}")
+                        continue
+
+                    try:
+                        x, y = int(parts[0]), int(parts[1])
+                        color = parts[2].strip()
+                        size = int(parts[3])
+                        self.stars.append(Star(x, y, color, size))
+                    except ValueError:
+                        print(f"Invalid data in line: {line.strip()}")  # Отладочное сообщение
+                        messagebox.showerror("Error", f"Invalid data in line: {line.strip()}")
+                        continue
+
             self.visualize()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to load stars: {e}")
@@ -85,7 +100,7 @@ class StarApp:
 
     def change_stars_color(self):
         for star in self.stars:
-            new_color = f'#{random.randint(0, 0xFFFFFF):06x}'
+            new_color = f'#{random.randint(0, 0xFFFFFF):06x}'  # Случайный цвет
             star.change_color(new_color)
         self.visualize()
 
